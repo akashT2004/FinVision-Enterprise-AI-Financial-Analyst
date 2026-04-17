@@ -1,0 +1,20 @@
+# Virtual Environment
+venv/
+.venv/
+env/
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+# Databases
+*.db
+# Vector DB data
+qdrant_data/
+# Uploaded files
+uploaded_docs/
+# IDEs
+.vscode/
+.idea/
+# Environment files
+.env

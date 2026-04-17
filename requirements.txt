@@ -1,0 +1,15 @@
+fastapi
+uvicorn[standard]
+sqlalchemy
+passlib[bcrypt]
+PyJWT
+python-multipart
+qdrant-client
+langchain
+langchain-community
+langchain-qdrant
+langchain-huggingface
+langchain-text-splitters
+sentence-transformers
+PyPDF2
+pydantic-settings
