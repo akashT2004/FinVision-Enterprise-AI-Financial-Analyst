@@ -1,5 +1,5 @@
 # STAGE 1: Build the React Application
-FROM node:20-slim AS build
+FROM node:22-slim AS build
 
 # Set working directory
 WORKDIR /app
@@ -11,7 +11,7 @@ RUN npm install
 # Copy the rest of the frontend code
 COPY ./frontend/ .
 
-# Direct build bypassing package.json scripts
+# Direct build bypassing package.json scripts with absolute path to node
 RUN npx vite build
 
 # STAGE 2: Serve the assets using Nginx
