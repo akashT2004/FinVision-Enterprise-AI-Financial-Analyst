@@ -34,8 +34,9 @@ A high-fidelity **Glassmorphic UI** built with **React** and **Framer Motion**, 
 | **Vector Engine** | Qdrant (Vector Database) |
 | **Embeddings** | Sentence-Transformers (all-MiniLM-L6-v2) |
 | **Backend** | FastAPI (Python), SQLAlchemy, SQLite, JWT |
-| **Frontend** | React (Vite), Recharts, Framer Motion, Lucide |
-| **Styling** | Vanilla CSS3 (Custom Design System) |
+| **Frontend** | React (Vite 6), Recharts, Framer Motion, Lucide |
+| **Containerization** | Docker, Docker-Compose |
+| **Deployment** | Railway.app (Production Ready) |
 
 ---
 
@@ -56,49 +57,37 @@ graph TD
 
 ---
 
-## 🚦 Getting Started
+## 🐳 Production Deployment
 
-### 1. Prerequisites
-*   Python 3.10+
-*   Node.js 18+
-*   Google Gemini API Key
+The project is fully optimized for cloud deployment (specifically **Railway.app**).
 
-### 2. Backend Setup
-```bash
-# Navigate to project root
-pip install -r requirements.txt
+### 1. Cloud Optimization (The 4GB Solution)
+The production environment uses a specialized `backend.Dockerfile` that utilizes **CPU-only torch builds**. This reduces the image footprint from **6GB+ to under 4GB**, ensuring compatibility with standard cloud free-tiers and high-speed deployments.
 
-# Create .env file
-# GOOGLE_API_KEY=your_key_here
+### 2. Environment Configuration
+To run in production, set the following variables in your cloud dashboard:
 
-# Start the server
-uvicorn app.main:app --reload
-```
-
-### 3. Frontend Setup
-```bash
-cd frontend
-npm install
-npm run dev
-```
+| Variable | Description |
+|---|---|
+| `VITE_API_URL` | Public URL of your Backend API. |
+| `GOOGLE_API_KEY` | Your Google Gemini API Key. |
+| `QDRANT_HOST` | Internal/External address of the Qdrant service. |
+| `SECRET_KEY` | Random string for JWT token security. |
 
 ---
 
-## 🐳 Docker Deployment (Professional Path)
+## 🚦 Local Setup
 
-To run the entire system identically to how it will behave in the cloud, use Docker:
+### 1. Prerequisites
+*   Python 3.10+
+*   Node.js 20+
+*   Google Gemini API Key
 
-1.  **Set Environment Variables**:
-    Create a `.env` file in the root and add your `GOOGLE_API_KEY`.
-
-2.  **Launch the System**:
-    ```bash
-    docker-compose up --build
-    ```
-    This will start the **React UI** (on port 80), the **FastAPI Engine** (on port 8000), and the **Qdrant DB** (on port 6333) as a synchronized team.
-
-3.  **Deploy to Cloud**:
-    Simply link this GitHub repository to **Railway.app**. It will detect the `docker-compose.yml` and handle the rest!
+### 2. Quick Launch (Docker)
+```bash
+docker-compose up --build
+```
+This will start the **React UI** (Port 80/8080), **FastAPI Engine** (Port 8000), and **Qdrant DB** (Port 6333) as a synchronized team.
 
 ---
 
