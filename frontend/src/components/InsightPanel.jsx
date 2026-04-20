@@ -17,11 +17,25 @@ export default function InsightPanel({ data, type, answer, citations }) {
     
     return data.map(item => {
       // If the AI nested metrics in a "values" object, flatten it
+      let flatItem = { ...item };
       if (item.values && typeof item.values === 'object') {
-        return { label: item.label, ...item.values };
+        flatItem = { label: item.label, ...item.values };
       }
-      // If it's already flat, return it directly
-      return item;
+      
+      // Clean all string values to pure numbers so the chart doesn't crash
+      const cleanedItem = {};
+      for (const [key, value] of Object.entries(flatItem)) {
+        if (key === 'label') {
+          cleanedItem[key] = value;
+        } else if (typeof value === 'string') {
+          // Extract numbers (e.g. "₹146,649 million" -> 146649)
+          const numStr = value.replace(/,/g, '').match(/-?\d+(\.\d+)?/);
+          cleanedItem[key] = numStr ? parseFloat(numStr[0]) : value;
+        } else {
+          cleanedItem[key] = value;
+        }
+      }
+      return cleanedItem;
     });
   }, [data]);
 
