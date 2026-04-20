@@ -11,6 +11,10 @@ RUN npm install
 # Copy the rest of the frontend code
 COPY ./frontend/ .
 
+# Unlock Railway specific Environment Variables for the build step!
+ARG VITE_API_URL
+ENV VITE_API_URL=$VITE_API_URL
+
 # Direct build bypassing package.json scripts with absolute path to node
 RUN npx vite build
 
