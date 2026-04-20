@@ -74,7 +74,8 @@ export default function InsightPanel({ data, type, answer, citations }) {
             initial={{ opacity: 0, scale: 0.98 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.2 }}
-            className="glass-card p-6 flex-grow min-h-[450px] relative"
+            className="glass-card p-6 flex-grow relative"
+            style={{ minHeight: '450px' }}
           >
             <div className="flex justify-between items-center mb-8">
               <div className="flex items-center space-x-2 text-accent-secondary">
@@ -87,7 +88,7 @@ export default function InsightPanel({ data, type, answer, citations }) {
               </div>
             </div>
             
-            <div className="h-[320px] w-full">
+            <div style={{ height: '320px', width: '100%' }}>
               <ResponsiveContainer width="100%" height="100%">
                 {type === 'bar' ? (
                   <BarChart data={processedData}>
