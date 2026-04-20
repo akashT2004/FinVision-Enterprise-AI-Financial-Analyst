@@ -104,17 +104,30 @@ class AnalystAgent:
                 
             data = json.loads(output_text)
             
-            # Post-process: Force numeric values in chart_data
+            # Post-process: Force numeric values in chart_data regardless of nesting
             if data.get("chart_data"):
+                import re
+                def clean_value(val):
+                    if isinstance(val, (int, float)): return val
+                    if isinstance(val, str):
+                        # Extract first contiguous block of numbers/decimals, ignoring commas and text
+                        cleaned = val.replace(',', '')
+                        match = re.search(r'-?\d+\.?\d*', cleaned)
+                        if match:
+                            try: return float(match.group())
+                            except: pass
+                    return val
+
                 for item in data["chart_data"]:
-                    if "value" in item and isinstance(item["value"], str):
-                        try: item["value"] = float(item["value"].replace(',', '').split()[0])
-                        except: pass
+                    # Clean direct flat values (except 'label')
+                    for k, v in item.items():
+                        if k not in ["label", "values"]:
+                            item[k] = clean_value(v)
+                            
+                    # Clean nested 'values' dictionary if the AI used it
                     if "values" in item and isinstance(item["values"], dict):
                         for k, v in item["values"].items():
-                            if isinstance(v, str):
-                                try: item["values"][k] = float(v.replace(',', '').split()[0].replace('H', ''))
-                                except: pass
+                            item["values"][k] = clean_value(v)
             return data
         except Exception as e:
             print(f"GEMINI ERROR: {str(e)}")
