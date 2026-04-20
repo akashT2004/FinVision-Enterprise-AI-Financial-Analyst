@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  # 🧠 AI Analyst Engine (Backend)
+  backend:
+    build:
+      context: .
+      dockerfile: backend.Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      - GOOGLE_API_KEY=${GOOGLE_API_KEY}
+    volumes:
+      - ./uploaded_docs:/app/uploaded_docs
+      - ./sqlite_db:/app/sqlite_db
+    restart: always
+
+  # 🖥️ Interactive Dashboard (Frontend)
+  frontend:
+    build:
+      context: .
+      dockerfile: frontend.Dockerfile
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    restart: always
+
+  # 🗄️ Vector Database (Semantic Memory)
+  qdrant:
+    image: qdrant/qdrant:latest
+    ports:
+      - "6333:6333"
+    volumes:
+      - ./qdrant_storage:/qdrant/storage
+    restart: always
+
+volumes:
+  uploaded_docs:
+  sqlite_db:
+  qdrant_storage:

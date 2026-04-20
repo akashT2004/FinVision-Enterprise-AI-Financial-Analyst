@@ -1,0 +1,30 @@
+import axios from 'axios';
+
+const api = axios.create({
+  baseURL: 'http://localhost:8000',
+});
+
+// Request interceptor: Attach token to every request
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem('token');
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+
+// Response interceptor: Handle 401 Unauthorized globally
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response && error.response.status === 401) {
+      console.warn('Session expired or unauthorized. Redirecting to login...');
+      localStorage.removeItem('token');
+      // Force reload to trigger App.jsx's redirect logic
+      window.location.reload();
+    }
+    return Promise.reject(error);
+  }
+);
+
+export default api;

@@ -4,7 +4,7 @@ import jwt
 from sqlalchemy.orm import Session
 from .config import settings
 from app.models.database import get_db
-from app.models.orm import User
+from app.models.orm import User, Role
 from app.schemas.auth import TokenData
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login")
@@ -23,9 +23,26 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(
         token_data = TokenData(username=username)
     except jwt.PyJWTError:
         raise credentials_exception
+        
     user = db.query(User).filter(User.username == token_data.username).first()
     if user is None:
         raise credentials_exception
+        
+    # SELF-HEALING: If user is 'admin' and has no role, fix it immediately
+    if user.username == "admin" and not user.role:
+        # Get or create Admin role
+        admin_role = db.query(Role).filter(Role.name == "Admin").first()
+        if not admin_role:
+            admin_role = Role(name="Admin")
+            db.add(admin_role)
+            db.add(Role(name="Analyst"))
+            db.commit()
+            db.refresh(admin_role)
+            
+        user.role_id = admin_role.id
+        db.commit()
+        db.refresh(user)
+        
     return user
 
 def get_current_active_user(current_user: User = Depends(get_current_user)):
