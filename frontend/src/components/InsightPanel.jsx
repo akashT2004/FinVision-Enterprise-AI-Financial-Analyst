@@ -15,28 +15,25 @@ export default function InsightPanel({ data, type, answer, citations }) {
   const processedData = React.useMemo(() => {
     if (!data || data.length === 0) return [];
     
-    // Check if the first item has the 'values' dictionary (multi-series)
-    const hasMultipleValues = data[0].values && typeof data[0].values === 'object';
-    
-    if (hasMultipleValues) {
-      // Flatten the values for Recharts: { label: '2023', 'Net Sales': 100, 'Profit': 20 }
-      return data.map(item => ({
-        label: item.label,
-        ...item.values
-      }));
-    }
-    
-    // Fallback to single value
-    return data;
+    return data.map(item => {
+      // If the AI nested metrics in a "values" object, flatten it
+      if (item.values && typeof item.values === 'object') {
+        return { label: item.label, ...item.values };
+      }
+      // If it's already flat, return it directly
+      return item;
+    });
   }, [data]);
 
   // Extract keys for multi-series bars/lines
   const seriesKeys = React.useMemo(() => {
-    if (data && data.length > 0 && data[0].values) {
-      return Object.keys(data[0].values);
+    if (processedData && processedData.length > 0) {
+      // Extract all keys that are not 'label' (since everything is flattened now)
+      const keys = Object.keys(processedData[0]).filter(k => k !== 'label' && k !== 'values');
+      return keys.length > 0 ? keys : ['value'];
     }
     return ['value'];
-  }, [data]);
+  }, [processedData]);
 
   return (
     <AnimatePresence mode="wait">
